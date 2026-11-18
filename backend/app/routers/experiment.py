@@ -64,7 +64,25 @@ def create_entry(payload: EntryPayload) -> ActionResult:
 
 @router.post("/{entry_id}/actions")
 def run_action(entry_id: int, payload: ActionPayload) -> ActionResult:
-    entry_or_none, message = service.run_action(entry_id, payload.action)
+    options = payload.options or {}
+    entry_or_none, message = service.run_action(
+        entry_id,
+        payload.action,
+        ratio_policy=options.get("ratio_policy"),
+        fail_after_groups=options.get("fail_after_groups"),
+    )
+    if entry_or_none is None:
+        return ActionResult(ok=False, message=message)
+    return ActionResult(ok=True, message=message, entry=entry_or_none)
+
+
+@router.post("/{entry_id}/ratio")
+def adjust_ratio(entry_id: int, payload: EntryPayload) -> ActionResult:
+    """登记分流比例调整：先挂为待生效版本，下次启动时按冲突策略处理。"""
+    new_ratio = str(payload.values.get("分流比例") or "").strip()
+    if not new_ratio:
+        return ActionResult(ok=False, message="缺少待调整的分流比例")
+    entry_or_none, message = service.adjust_ratio(entry_id, new_ratio)
     if entry_or_none is None:
         return ActionResult(ok=False, message=message)
     return ActionResult(ok=True, message=message, entry=entry_or_none)

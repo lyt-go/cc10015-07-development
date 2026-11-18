@@ -33,6 +33,8 @@ class ActionPayload(BaseModel):
 
     action: str
     remark: str | None = None
+    # 动作附加选项，例如实验启动时选择分流比例冲突策略 freeze_old / apply_new。
+    options: dict[str, Any] = Field(default_factory=dict)
 
 
 

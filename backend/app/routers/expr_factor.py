@@ -76,9 +76,12 @@ def get_entry(entry_id: int) -> dict:
 
 @router.post("", response_model=ActionResult)
 def create_entry(payload: dict[str, object]) -> ActionResult:
-    """登记一条因子配置，缺字段时说明原因而不是静默丢弃。"""
+    """登记一条因子配置，缺字段或互斥冲突时说明原因而不是静默丢弃。"""
     entry, missing = service.create_entry(payload)
     if missing:
+        # 互斥规则拦截返回的是完整可读说明，缺字段才拼接统一前缀。
+        if len(missing) == 1 and "互斥" in missing[0]:
+            return ActionResult(ok=False, message=missing[0])
         return ActionResult(ok=False, message=f"缺少必填字段：{'、'.join(missing)}")
     return ActionResult(ok=True, message="因子配置已登记", entry=entry)
 

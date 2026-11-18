@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Overview from '@/views/Overview.vue'
 const Experiment = () => import('@/views/experiment/index.vue')
+const GroupSnapshot = () => import('@/views/group_snapshot/index.vue')
 const SampleGroup = () => import('@/views/sample_group/index.vue')
 const MetricDef = () => import('@/views/metric_def/index.vue')
 const AbResult = () => import('@/views/ab_result/index.vue')
@@ -25,6 +26,7 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'overview', component: Overview },
     { path: '/experiment', name: 'experiment', component: Experiment },
+    { path: '/group_snapshot', name: 'group_snapshot', component: GroupSnapshot },
     { path: '/sample_group', name: 'sample_group', component: SampleGroup },
     { path: '/metric_def', name: 'metric_def', component: MetricDef },
     { path: '/ab_result', name: 'ab_result', component: AbResult },
